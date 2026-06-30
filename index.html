@@ -1540,7 +1540,26 @@
             </div>
           </div>
         `;
-        scrol      function getBotOfflineResponse(prompt) {
+        scrollBotToBottom();
+
+        // Respond after a delay with mock thinking
+        setTimeout(() => {
+          // Remove loading bubble
+          const loadingElem = document.getElementById(loadingId);
+          if (loadingElem) loadingElem.remove();
+
+          const replyText = getBotOfflineResponse(userText);
+          state.botMessages.push({
+            id: "bot_" + Date.now(),
+            role: "model",
+            text: replyText,
+            timestamp: getCurrentTime()
+          });
+          renderBotMessages();
+        }, 850);
+      }
+
+      function getBotOfflineResponse(prompt) {
         const textLower = prompt.toLowerCase();
         
         if (textLower.includes("o que é um fóssil") || textLower.includes("o que é fóssil") || textLower.includes("defina fóssil") || textLower.includes("fóssil?")) {
@@ -1587,10 +1606,6 @@
           return "Sabias que em **Portugal** temos algumas das maiores riquezas paleontológicas do mundo? Por exemplo:\n\n- **Trilobites Gigantes**: Em Canelas (Arouca), encontram-se trilobites de valor científico incalculável com mais de 50 cm de comprimento!\n- **O Mais Longo do Mundo**: O trilho de pegadas de dinossauro na Serra de Aire é um dos mais lungos conhecidos do mundo!\n- **Predadores Titânicos**: Os dentes de Megalodonte e fósseis de dinossauros da Lourinhã mostram que Portugal foi palco de animais gigantes no passado! 🇵🇹";
         } else {
           return "Olá, jovem paleontólogo! Fico contente com a tua curiosidade 🦕. Como PaleoBot do **Agrupamento de Escolas de Carnaxide** (aulas do **Professor Olavo Dinis**), posso explicar-te tópicos da matéria como:\n- *O que é um fóssil e o que estuda a Paleontologia?*\n- *Como se formam os fósseis (mineralização, incarbonização, moldagem ou mumificação)?*\n- *O que são somatofósseis e icnofósseis (vestígios como as Cruziana)?*\n- *Os princípios geológicos (Atualismo, Sobreposição, etc.)?*\n- *Fósseis de idade (Amonites) vs. Fósseis de ambiente (Corais)?*\n- *As três grandes eras geológicas (Paleozoico, Mesozoico, Cenozoico)?*\n\nQual é o teu tema preferido para explorarmos?";
-        }
-      }ros da Serra de Aire é o mais longo do mundo!\n- Em Canelas (Arouca), encontram-se trilobites gigantes com mais de 50 cm de comprimento!\n- O Geoparque de Arouca e a Lourinhã são geossítios classificados de valor internacional devido aos seus fósseis excecionais! 🇵🇹";
-        } else {
-          return "Olá, jovem paleontólogo! Fico contente com a tua curiosidade 🦕. Como PaleoBot, posso explicar-te tópicos da matéria do 7.º ano como:\n- *O que é um fóssil?*\n- *Diferença entre Somatofóssil e Icnofóssil*\n- *Processos de fossilização como Mineralização, Incarbonização, Moldagem e Âmbar*\n- *As três grandes eras geológicas (Paleozoico, Mesozoico, Cenozoico)*\n- *A importância dos fósseis de idade e de fácies.*\n\nO que queres explorar a seguir?";
         }
       }
     </script>
