@@ -1,13 +1,1593 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Museu Virtual de Fósseis - Ciências Naturais (7.º Ano)</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              serif: ['Cinzel', 'Georgia', 'serif'],
+            },
+            colors: {
+              warm: {
+                bg: '#F5F2ED',
+                text: '#3D2B1F',
+                header: '#EAE3D9',
+                border: '#D4C4B0',
+                accent: '#C5A059',
+                sage: '#6B705C',
+                paper: '#FDFBF7',
+              },
+              dark: {
+                bg: '#1F1610',
+                text: '#EAE3D9',
+                panel: '#2C2016',
+                card: '#38281D',
+                border: '#4D3A2C',
+                sage: '#A3AA90',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      /* Custom fine-grained scrollbar styling */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(197, 160, 89, 0.3);
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(197, 160, 89, 0.6);
+      }
+
+      /* Clean fade-in animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-fadeIn {
+        animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+    </style>
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body class="min-h-screen font-sans transition-colors duration-300 dark:bg-dark-bg bg-warm-bg dark:text-dark-text text-warm-text">
+    
+    <!-- Ambient top visual gradient -->
+    <div class="absolute top-0 left-0 w-full h-[350px] bg-gradient-to-b from-warm-accent/10 to-transparent pointer-events-none"></div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="app" class="relative flex flex-col min-h-screen">
+
+      <!-- ACCESSIBILITY & UTILITIES HEADER BAR -->
+      <nav id="top-navbar" class="sticky top-0 z-30 border-b backdrop-blur-md transition-colors dark:bg-dark-panel/90 dark:border-dark-border bg-warm-header/90 border-warm-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-warm-accent text-white font-bold shadow-md">
+              <i data-lucide="landmark" class="h-5 w-5"></i>
+            </div>
+            <div>
+              <span id="logo-text" class="font-serif font-extrabold tracking-tight text-warm-accent text-base sm:text-lg">
+                FóssilVirtual
+              </span>
+              <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-widest ml-2 dark:text-dark-sage text-warm-sage">
+                CIÊNCIAS 7.º ANO
+              </span>
+            </div>
+          </div>
+
+          <!-- Quick Accessibility Options -->
+          <div class="flex items-center gap-3">
+            
+            <!-- Font sizing button -->
+            <button onclick="toggleFontSize()" title="Ajustar Tamanho da Letra" class="p-2 rounded-lg cursor-pointer transition-colors dark:hover:bg-dark-border/40 hover:bg-warm-border/40 text-warm-accent flex items-center gap-1">
+              <i data-lucide="type" class="h-4 w-4"></i>
+              <span id="font-scale-indicator" class="text-[10px] font-bold">A</span>
+            </button>
+
+            <!-- Dark / Light mode toggle -->
+            <button onclick="toggleDarkMode()" title="Alternar Modo Escuro" class="p-2 rounded-lg cursor-pointer transition-colors dark:hover:bg-dark-border/40 hover:bg-warm-border/40 text-warm-accent">
+              <span id="theme-icon-container">
+                <i data-lucide="sun" class="h-4 w-4"></i>
+              </span>
+            </button>
+
+            <!-- Add new fossil button -->
+            <button onclick="openAddModal()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-warm-accent text-white flex items-center gap-1.5 hover:bg-warm-accent/90 shadow transition-transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
+              <i data-lucide="plus-circle" class="h-4 w-4"></i>
+              <span class="hidden sm:inline">Adicionar Fóssil</span>
+              <span class="sm:hidden">Novo</span>
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <!-- JUMBOTRON / INTRODUCTION HERO -->
+      <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 text-center relative z-10">
+        <div class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-extrabold uppercase tracking-widest text-warm-accent bg-warm-accent/5 border-warm-accent/20 mb-3 animate-fadeIn">
+          <i data-lucide="compass" class="h-3 w-3"></i>
+          <span>Exposição interativa colaborativa</span>
+        </div>
+        <h1 id="hero-title" class="font-serif font-extrabold tracking-tight leading-none text-3xl sm:text-4xl md:text-5xl dark:text-dark-text text-warm-text animate-fadeIn">
+          Museu Virtual de Fósseis
+        </h1>
+        <p id="hero-desc" class="mt-4 max-w-2xl mx-auto text-xs sm:text-sm leading-relaxed dark:text-dark-sage text-warm-sage animate-fadeIn">
+          Este museu virtual foi desenhado para os alunos do <strong>7.º ano</strong> na disciplina de
+          <strong>Ciências Naturais</strong>. Cada grupo de alunos pode explorar os exemplares paleontológicos
+          e adicionar as suas próprias apresentações digitais e questionários sobre fósseis.
+          Estuda as eras geológicas, joga os mini-quizzes e esclarece as tuas dúvidas com o nosso assistente digital <strong>PaleoBot</strong>!
+        </p>
+      </header>
+
+      <!-- CONTROLS, SEARCH, AND FILTERS PANEL -->
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 w-full relative z-10">
+        <div class="p-4 rounded-2xl border-2 flex flex-col md:flex-row gap-4 items-center justify-between dark:bg-dark-panel/50 dark:border-dark-border bg-white border-warm-border/50">
+          
+          <!-- Era filter switches -->
+          <div class="flex flex-wrap items-center gap-1.5 w-full md:w-auto">
+            <span class="text-[10px] font-bold uppercase tracking-widest mr-2 flex items-center gap-1 dark:text-dark-sage text-warm-sage">
+              <i data-lucide="filter" class="h-3 w-3"></i>
+              <span>Filtrar Era:</span>
+            </span>
+
+            <div class="flex flex-wrap gap-1.5" id="era-filters-container">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Search bar -->
+          <div class="relative w-full md:w-72">
+            <i data-lucide="search" class="absolute left-3.5 top-2.5 h-4 w-4 text-stone-400"></i>
+            <input
+              id="fossil-search-bar"
+              type="text"
+              placeholder="Pesquisar fóssil ou grupo..."
+              oninput="handleSearch(this.value)"
+              class="w-full text-xs rounded-xl pl-9 pr-12 py-2.5 border outline-none transition-all dark:bg-dark-bg dark:border-dark-border dark:text-white dark:focus:border-warm-accent bg-warm-bg/50 border-warm-border text-warm-text focus:border-warm-accent focus:bg-white"
+            />
+            <button
+              id="search-clear-btn"
+              onclick="clearSearch()"
+              class="hidden absolute right-3 top-2.5 text-stone-500 hover:text-warm-accent text-xs font-bold"
+            >
+              Limpar
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXHIBITIONS GALLERY GRID -->
+      <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 w-full">
+        <div id="fossils-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 animate-fadeIn">
+          <!-- Rendered via JS -->
+        </div>
+
+        <!-- Reset database helper -->
+        <div id="reset-catalog-container" class="mt-12 flex justify-center hidden">
+          <button
+            onclick="handleResetCatalog()"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase border transition-all cursor-pointer dark:bg-transparent dark:border-dark-border dark:text-dark-sage dark:hover:text-rose-400 dark:hover:border-rose-950 bg-transparent border-warm-border text-warm-sage hover:text-rose-600 hover:border-rose-200"
+          >
+            <span>Repor Catálogo Original</span>
+          </button>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="border-t py-8 text-center text-xs transition-colors dark:bg-dark-panel dark:border-dark-border dark:text-dark-sage bg-warm-header border-warm-border text-warm-sage">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-1.5">
+            <span class="font-bold">Museu Virtual de Fósseis</span>
+            <span>•</span>
+            <span>Disciplina de Ciências Naturais (7.º Ano)</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <span>Desenvolvido para aprendizagem ativa e literacia científica</span>
+            <i data-lucide="heart" class="h-3.5 w-3.5 text-rose-500 fill-rose-500 animate-pulse"></i>
+          </div>
+        </div>
+      </footer>
+
+      <!-- DETAIL MODAL CONTAINER -->
+      <div id="detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden animate-fadeIn">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- ADD FOSSIL MODAL CONTAINER -->
+      <div id="add-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden animate-fadeIn">
+        <div class="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 shadow-2xl border transition-colors dark:bg-dark-panel dark:border-dark-border bg-warm-paper border-warm-border">
+          <div class="flex items-center justify-between border-b pb-4 mb-4 dark:border-dark-border border-warm-border">
+            <div class="flex items-center gap-2 text-warm-accent">
+              <i data-lucide="plus-circle" class="h-5 w-5"></i>
+              <h3 class="font-serif font-bold text-lg">Adicionar Nova Apresentação de Fóssil</h3>
+            </div>
+            <button onclick="closeAddModal()" class="p-1 rounded-lg hover:bg-stone-500/10 cursor-pointer">
+              <i data-lucide="x" class="h-5 w-5 text-stone-400"></i>
+            </button>
+          </div>
+
+          <form id="add-fossil-form" onsubmit="saveCustomFossil(event)" class="space-y-4 text-xs">
+            <!-- Passo 1: Informações Gerais -->
+            <div class="border-b pb-2 dark:border-dark-border border-warm-border">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-warm-accent">1. Identificação e Enquadramento</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Nome do Fóssil *</label>
+                <input required type="text" name="fossil-name" placeholder="Ex: Trilobite de Canelas" class="w-full p-2.5 rounded-lg border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+              </div>
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Grupo de Alunos / Autor *</label>
+                <input required type="text" name="fossil-group" placeholder="Ex: Grupo 3 - 7.ºA" class="w-full p-2.5 rounded-lg border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Era Geológica *</label>
+                <select required name="fossil-era" class="w-full p-2.5 rounded-lg border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+                  <option value="Paleozoico">Paleozoico</option>
+                  <option value="Mesozoico">Mesozoico</option>
+                  <option value="Cenozoico">Cenozoico</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Período Geológico *</label>
+                <input required type="text" name="fossil-period" placeholder="Ex: Ordovícico / Jurássico" class="w-full p-2.5 rounded-lg border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+              </div>
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Idade Aproximada *</label>
+                <input required type="text" name="fossil-age" placeholder="Ex: 150 M.a. / 465 M.a." class="w-full p-2.5 rounded-lg border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Organismo Representado *</label>
+                <input required type="text" name="fossil-organism" placeholder="Ex: Artrópode marinho primordial" class="w-full p-2.5 rounded-lg border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+              </div>
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Local onde pode ser encontrado *</label>
+                <input required type="text" name="fossil-location" placeholder="Ex: Canelas (Arouca, Portugal)" class="w-full p-2.5 rounded-lg border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+              </div>
+            </div>
+
+            <!-- Passo 2: Tipo e Fossilização -->
+            <div class="border-t border-b py-2 dark:border-dark-border border-warm-border">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-warm-accent">2. Classificação & Fossilização</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Tipo de Fóssil *</label>
+                <select required name="fossil-type" class="w-full p-2.5 rounded-lg border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+                  <option value="Somatofóssil">Somatofóssil (resto do corpo: osso, dente, concha, feto...)</option>
+                  <option value="Icnofóssil">Icnofóssil (vestígio de atividade: pegada, pista, fezes...)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Produto Final de Fossilização *</label>
+                <select required name="fossil-product" class="w-full p-2.5 rounded-lg border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+                  <option value="Molde">Molde (preservação da forma externa ou interna do organismo)</option>
+                  <option value="Mineralização">Mineralização (substituição da matéria orgânica por minerais)</option>
+                  <option value="Incarbonização">Incarbonização (enriquecimento em carbono de restos vegetais)</option>
+                  <option value="Mumificação (ou conservação total)">Mumificação / Conservação Total (preservação em âmbar, gelo, etc.)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Ambiente em que viveu (Paleoambiente) *</label>
+                <input required type="text" name="fossil-environment" placeholder="Ex: Fundo marinho raso de clima polar" class="w-full p-2.5 rounded-lg border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+              </div>
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Imagens Ilustrativas (URLs) *</label>
+                <div class="space-y-1">
+                  <input required type="url" name="fossil-image" placeholder="URL da Imagem Principal *" class="w-full p-2 rounded border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+                  <input type="url" name="fossil-image-sec1" placeholder="URL da Imagem Secundária 1 (Opcional)" class="w-full p-2 rounded border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+                  <input type="url" name="fossil-image-sec2" placeholder="URL da Imagem Secundária 2 (Opcional)" class="w-full p-2 rounded border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+                </div>
+              </div>
+            </div>
+
+            <!-- Passo 3: Explicações Científicas -->
+            <div class="border-t border-b py-2 dark:border-dark-border border-warm-border">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-warm-accent">3. Conteúdo Científico & Curiosidades</span>
+            </div>
+            <div>
+              <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Descrição Científica Simples (Adequada ao 7.º Ano) *</label>
+              <textarea required name="fossil-desc" rows="3" placeholder="Fornece uma descrição adaptada ao 7.º ano, cientificamente correta, clara e fascinante..." class="w-full p-2.5 rounded-lg border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border"></textarea>
+            </div>
+
+            <div>
+              <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Importância do fóssil para compreender a história da Terra *</label>
+              <textarea required name="fossil-importance" rows="2" placeholder="Explica como este fóssil nos ajuda a compreender o passado do planeta (seja como fóssil de idade ou de fácies, reconstituição paleoambiental, etc.)..." class="w-full p-2.5 rounded-lg border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border"></textarea>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block font-bold dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Curiosidades Científicas</label>
+              <input required type="text" name="fossil-curiosity-1" placeholder="Curiosidade Científica 1 *" class="w-full p-2 rounded border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+              <input type="text" name="fossil-curiosity-2" placeholder="Curiosidade Científica 2 (Opcional)" class="w-full p-2 rounded border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+              <input type="text" name="fossil-curiosity-3" placeholder="Curiosidade Científica 3 (Opcional)" class="w-full p-2 rounded border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border">
+            </div>
+
+            <!-- Passo 4: Glossário e Quiz do Grupo -->
+            <div class="border-t border-b py-2 dark:border-dark-border border-warm-border">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-warm-accent">4. Glossário & Quiz dos Alunos</span>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block font-bold dark:text-dark-sage text-warm-sage uppercase tracking-wider text-[10px]">Pequeno Glossário de Conceitos Associados (Adiciona até 3 termos)</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input required type="text" name="fossil-glossary-term-1" placeholder="Conceito 1 (ex: Diagénese) *" class="p-2 rounded border dark:bg-dark-bg dark:border-dark-border bg-white border-warm-border">
+                <input required type="text" name="fossil-glossary-def-1" placeholder="Definição 1 *" class="p-2 rounded border dark:bg-dark-bg dark:border-dark-border bg-white border-warm-border">
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input type="text" name="fossil-glossary-term-2" placeholder="Conceito 2 (Opcional)" class="p-2 rounded border dark:bg-dark-bg dark:border-dark-border bg-white border-warm-border">
+                <input type="text" name="fossil-glossary-def-2" placeholder="Definição 2 (Opcional)" class="p-2 rounded border dark:bg-dark-bg dark:border-dark-border bg-white border-warm-border">
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input type="text" name="fossil-glossary-term-3" placeholder="Conceito 3 (Opcional)" class="p-2 rounded border dark:bg-dark-bg dark:border-dark-border bg-white border-warm-border">
+                <input type="text" name="fossil-glossary-def-3" placeholder="Definição 3 (Opcional)" class="p-2 rounded border dark:bg-dark-bg dark:border-dark-border bg-white border-warm-border">
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl dark:bg-dark-bg/60 bg-warm-bg/60 border dark:border-dark-border border-warm-border space-y-3.5">
+              <span class="block font-bold text-[10px] uppercase tracking-wider text-warm-accent">Cria um Quiz Final interativo para os teus colegas</span>
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage">Pergunta do Quiz *</label>
+                <input required type="text" name="quiz-question" placeholder="Ex: Que tipo de fóssil representa a pegada de um dinossauro?" class="w-full p-2 rounded border dark:bg-dark-bg dark:border-dark-border focus:border-warm-accent bg-white border-warm-border">
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage text-[9px] text-emerald-500 uppercase">Opção Correta *</label>
+                  <input required type="text" name="quiz-correct" placeholder="Resposta Certa" class="w-full p-2 rounded border dark:bg-dark-bg dark:border-dark-border focus:border-warm-accent bg-white border-warm-border">
+                </div>
+                <div>
+                  <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage text-[9px] text-rose-400 uppercase">Distrator 1 (Errada) *</label>
+                  <input required type="text" name="quiz-incorrect-1" placeholder="Resposta Errada" class="w-full p-2 rounded border dark:bg-dark-bg dark:border-dark-border focus:border-warm-accent bg-white border-warm-border">
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage text-[9px] text-rose-400 uppercase">Distrator 2 (Errada) *</label>
+                  <input required type="text" name="quiz-incorrect-2" placeholder="Resposta Errada 2" class="w-full p-2 rounded border dark:bg-dark-bg dark:border-dark-border focus:border-warm-accent bg-white border-warm-border">
+                </div>
+                <div>
+                  <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage text-[9px] text-rose-400 uppercase">Distrator 3 (Errada) *</label>
+                  <input required type="text" name="quiz-incorrect-3" placeholder="Resposta Errada 3" class="w-full p-2 rounded border dark:bg-dark-bg dark:border-dark-border focus:border-warm-accent bg-white border-warm-border">
+                </div>
+              </div>
+              <div>
+                <label class="block font-bold mb-1 dark:text-dark-sage text-warm-sage">Explicação Pedagógica de Feedback *</label>
+                <input required type="text" name="quiz-explanation" placeholder="Explica aos teus colegas porque é que essa é a resposta certa..." class="w-full p-2 rounded border dark:bg-dark-bg dark:border-dark-border focus:border-warm-accent bg-white border-warm-border">
+              </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2">
+              <button type="button" onclick="closeAddModal()" class="px-4 py-2 rounded-xl border dark:border-dark-border dark:text-dark-sage dark:hover:bg-dark-border/40 border-warm-border text-warm-sage hover:bg-warm-border/40 cursor-pointer font-bold">Cancelar</button>
+              <button type="submit" class="px-5 py-2 rounded-xl bg-warm-accent text-white font-bold uppercase tracking-wider hover:bg-warm-accent/90 shadow cursor-pointer">Guardar e Publicar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- FLOATING PALEOBOT UI CONTAINER -->
+      <div id="paleobot-floating-root" class="fixed bottom-6 right-6 z-40 flex flex-col items-end">
+        <!-- Floating Chatbox panel -->
+        <div id="paleobot-chatbox" class="w-[90vw] sm:w-[380px] h-[480px] rounded-2xl shadow-2xl border flex flex-col overflow-hidden mb-3 transition-transform scale-90 opacity-0 pointer-events-none origin-bottom-right transition-all duration-300 dark:bg-dark-panel dark:border-dark-border bg-warm-paper border-warm-border">
+          
+          <!-- Chatbox Header -->
+          <div class="p-3.5 dark:bg-dark-bg bg-warm-header border-b dark:border-dark-border border-warm-border flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="h-8 w-8 rounded-lg bg-warm-accent text-white flex items-center justify-center animate-bounce">
+                <i data-lucide="compass" class="h-4.5 w-4.5"></i>
+              </div>
+              <div>
+                <h4 class="font-serif font-bold text-xs">PaleoBot</h4>
+                <div class="flex items-center gap-1 text-[9px] text-emerald-500 font-extrabold uppercase">
+                  <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                  <span>Guia Paleontólogo</span>
+                </div>
+              </div>
+            </div>
+            <button onclick="toggleBot()" class="p-1 rounded-lg hover:bg-stone-500/10 cursor-pointer text-stone-400">
+              <i data-lucide="x" class="h-4 w-4"></i>
+            </button>
+          </div>
+
+          <!-- Messages Container -->
+          <div id="bot-messages-box" class="flex-1 p-3 overflow-y-auto space-y-3 text-xs dark:bg-dark-panel bg-warm-paper">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Quick Suggestion Prompts -->
+          <div class="px-3 py-1 border-t dark:border-dark-border border-warm-border flex gap-1.5 overflow-x-auto scrollbar-none py-1.5 dark:bg-dark-bg/40 bg-warm-header/40" id="bot-suggestions">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Message input form -->
+          <form onsubmit="handleBotSendMessage(event)" class="p-2 border-t dark:border-dark-border border-warm-border flex gap-2 dark:bg-dark-panel bg-warm-paper">
+            <input
+              id="bot-user-input"
+              type="text"
+              placeholder="Pergunta-me algo sobre fósseis..."
+              class="flex-1 text-xs px-3 py-2 rounded-xl border outline-none dark:bg-dark-bg dark:border-dark-border dark:text-white focus:border-warm-accent bg-white border-warm-border"
+            />
+            <button type="submit" class="p-2 rounded-xl bg-warm-accent text-white hover:bg-warm-accent/90 cursor-pointer">
+              <i data-lucide="compass" class="h-4 w-4"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- Launcher button -->
+        <button id="bot-launcher" onclick="toggleBot()" class="h-14 w-14 rounded-full bg-warm-accent text-white flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-transform cursor-pointer relative group">
+          <i data-lucide="compass" class="h-6 w-6 group-hover:rotate-45 transition-transform duration-300"></i>
+          <span class="absolute right-16 top-3 bg-warm-accent/95 backdrop-blur-sm text-white text-[10px] px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 whitespace-nowrap shadow transition-all duration-300 hidden sm:inline">Conversar com PaleoBot</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- JAVASCRIPT LOGIC - VANILLA REACT ENGINE -->
+    <script>
+      // --- APP DATA CONFIGURATION ---
+      const EraGeologica = {
+        PALEOZOICO: "Paleozoico",
+        MESOZOICO: "Mesozoico",
+        CENOZOICO: "Cenozoico"
+      };
+
+      const TipoFossil = {
+        CORPORAL: "Fóssil Corporal",
+        VESTIGIO: "Icnofóssil (Vestígio)"
+      };
+
+      const originalFossils = [
+        {
+          id: "megalodonte",
+          name: "Dente de Megalodonte",
+          imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/14/Megalodon_tooth_adult.jpg",
+          images: [
+            "https://upload.wikimedia.org/wikipedia/commons/1/14/Megalodon_tooth_adult.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/e/e0/Megalodon_jaw_reconstruction.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/0/07/Otodus_megalodon_reconstruction_by_Karen_Carr.jpg"
+          ],
+          era: EraGeologica.CENOZOICO,
+          period: "Neogénico (Miocénico ao Pliocénico)",
+          type: "Somatofóssil",
+          fossilizationProduct: "Mineralização",
+          organism: "Tubarão pré-histórico gigante (Otodus megalodon)",
+          age: "Cerca de 23 a 3.6 milhões de anos (M.a.)",
+          environment: "Oceanos temperados e quentes de todo o mundo (Paleoambiente marinho de águas pouco profundas)",
+          location: "Arredores de Lisboa, bacia sedimentar do Tejo e falésias da Adiça (Portugal)",
+          description: "O Megalodonte foi o maior tubarão que alguma vez habitou os oceanos da Terra, atingindo comprimentos estimados de até 15 a 18 metros. Como os tubarões têm um esqueleto cartilagíneo que raramente fossiliza, a esmagadora maioria dos registos fósseis deste predador consiste em dentes gigantes mineralizados de forma triangular, que podem ultrapassar os 15 centímetros de comprimento.",
+          curiosities: [
+            "O nome Megalodonte significa literalmente 'dente gigante' devido ao tamanho inacreditável dos seus dentes.",
+            "Um único indivíduo podia ter até 276 dentes distribuídos por 5 fileiras nas suas mandíbulas avassaladoras.",
+            "A sua força de mordida era estimada como 10 vezes superior à do grande tubarão-branco atual!"
+          ],
+          importance: "A distribuição destes dentes permite estudar as antigas cadeias alimentares marinas (paleoecologia) do Cenozoico e as alterações de temperatura que levaram à sua extinção.",
+          glossary: [
+            { term: "Mineralização", definition: "Processo de fossilização em que os tecidos porosos (como ossos ou dentes) são preenchidos por minerais transportados pela água subterrânea." },
+            { term: "Cartilagem", definition: "Tecido elástico e resistente que constitui o esqueleto dos tubarões. Decompõe-se rapidamente, o que dificulta a preservação de outras partes corporais além dos dentes." },
+            { term: "Paleoecologia", definition: "Ramo da paleontologia que estuda a relação entre os organismos fósseis e os ambientes em que estes viviam." }
+          ],
+          quiz: [
+            {
+              id: "meg_q1",
+              type: "multiple",
+              questionText: "Por que razão quase só encontramos dentes como fósseis de Megalodonte?",
+              options: [
+                "Porque o esqueleto de cartilagem decompunha-se antes de fossilizar, enquanto os dentes eram duros e mineralizavam.",
+                "Porque os dinossauros comiam o resto do corpo.",
+                "Porque os megalodontes perdiam os dentes e nasciam de novo na rocha.",
+                "Porque os dentes eram feitos de metal inoxidável."
+              ],
+              correctAnswer: "Porque o esqueleto de cartilagem decompunha-se antes de fossilizar, enquanto os dentes eram duros e mineralizavam.",
+              explanation: "Os dentes contêm esmalte e fosfato de cálcio muito resistentes, ao passo que o esqueleto dos tubarões é cartilagíneo, o que dificulta extremamente a sua preservação."
+            }
+          ]
+        },
+        {
+          id: "pegada_dino",
+          name: "Pegada de Dinossauro",
+          imageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Theropod_dinosaur_footprint.JPG",
+          images: [
+            "https://upload.wikimedia.org/wikipedia/commons/4/4b/Theropod_dinosaur_footprint.JPG",
+            "https://upload.wikimedia.org/wikipedia/commons/a/ad/Theropod_dinosaur_footprints_on_limestone.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/1/11/Sauropod_footprint_portugal.jpg"
+          ],
+          era: EraGeologica.MESOZOICO,
+          period: "Jurássico",
+          type: "Icnofóssil",
+          fossilizationProduct: "Molde",
+          organism: "Dinossauros Saurópodes e Terópodes",
+          age: "Cerca de 175 a 145 milhões de anos (M.a.)",
+          environment: "Zonas lagunares, pântanos ou margens de lagos lamacentos de clima tropical",
+          location: "Serra de Aire (Pedreira do Galinha), Cabo Espichel e Lourinhã (Portugal)",
+          description: "As pegadas de dinossauro são icnofósseis (fósseis de atividade ou vestígio). Elas registam a passagem, o comportamento, a velocidade e o peso destes répteis gigantescos nas margens de antigas lagoas tropicais. Ao longo do tempo, a lama mole onde pisaram secou, foi coberta por novas camadas de sedimentos e transformou-se em rocha (calcário), preservando os trilhos de pegadas até hoje.",
+          curiosities: [
+            "O Monumento Natural das Pegadas de Dinossauro da Serra de Aire contém o trilho de pegadas de saurópodes mais longo do mundo, com 147 metros de comprimento!",
+            "Através da distância entre as pegadas e do seu tamanho, os cientistas conseguem calcular a velocidade a que o dinossauro caminhava ou corria.",
+            "As pegadas com três dedos pontiagudos pertenciam geralmente a carnívoros (terópodes), enquanto as pegadas arredondadas eram de herbívoros gigantes (saurópodes)."
+          ],
+          importance: "São fundamentais como fósseis de fácies, pois indicam com precisão o ambiente antigo (paleoambiente): zonas costeiras lodosas e clima tropical húmido do período Jurássico.",
+          glossary: [
+            { term: "Icnofóssil", definition: "Fóssil que regista indícios da atividade de um organismo, como pegadas, pistas de locomoção, túneis de habitação ou fezes (coprólitos)." },
+            { term: "Fóssil de fácies", definition: "Fóssil que permite identificar as condições do ambiente em que a rocha se formou (paleoambiente), pois o organismo dependia fortemente desse meio para viver." },
+            { term: "Saurópodes", definition: "Dinossauros herbívoros de grande porte, pescoço e cauda longos, que se deslocavam sobre quatro patas pesadas." }
+          ],
+          quiz: [
+            {
+              id: "dino_q1",
+              type: "multiple",
+              questionText: "A que categoria de fósseis pertencem as pegadas petrificadas?",
+              options: [
+                "Icnofósseis (fósseis de vestígio/atividade)",
+                "Fósseis corporais directos",
+                "Mumificação sob resinas",
+                "Moldes internos metálicos"
+              ],
+              correctAnswer: "Icnofósseis (fósseis de vestígio/atividade)",
+              explanation: "Os icnofósseis não contêm partes físicas do corpo do ser vivo, mas sim marcas da sua atividade biológica, comportamento ou presença."
+            }
+          ]
+        },
+        {
+          id: "trilobite_canelas",
+          name: "Trilobite Gigante de Canelas",
+          imageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Asaphellus_canelas.jpg",
+          images: [
+            "https://upload.wikimedia.org/wikipedia/commons/4/4e/Asaphellus_canelas.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/2/29/Trilobites_canelas_gregaria.jpg"
+          ],
+          era: EraGeologica.PALEOZOICO,
+          period: "Ordovícico",
+          type: "Somatofóssil",
+          fossilizationProduct: "Molde",
+          organism: "Artrópodes marinhos primitivos (Trilobites)",
+          age: "Cerca de 465 milhões de anos (M.a.)",
+          environment: "Fundo de um oceano antigo, frio e profundo, próximo do Polo Sul",
+          location: "Centro de Interpretação Geológica de Canelas (Arouca, Portugal)",
+          description: "As trilobites foram artrópodes marinhos que habitaram a Terra exclusivamente durante a Era Paleozoica. Possuíam uma carapaça dura segmentada em três lóbulos. Na região de Canelas (Arouca), encontra-se uma das jazidas mais importantes do mundo de fósseis de trilobites gigantes em ardósia, onde os animais ficaram fossilizados sob a forma de moldes espetaculares.",
+          curiosities: [
+            "Em Canelas, foram descobertas trilobites gigantes com mais de 70 cm de comprimento, quando o tamanho normal ronda poucos centímetros!",
+            "Muitos fósseis encontram-se em posições agregadas (associação gregária), indicando que se juntavam para acasalamento ou para a muda da carapaça.",
+            "O nome trilobite provém de 'três lobos', dividindo-se o seu corpo longitudinalmente em lobo pleural esquerdo, lobo axial e lobo pleural direito."
+          ],
+          importance: "As trilobites são excelentes fósseis de idade para datar as rochas paleozoicas e provam que o território de Portugal já esteve submerso sob um mar frio de altas latitudes no supercontinente Gondwana.",
+          glossary: [
+            { term: "Fóssil de Idade", definition: "Fóssil de um organismo que viveu durante um curto período de tempo geológico mas com grande dispersão mundial, excelente para datar rochas." },
+            { term: "Exoesqueleto", definition: "Carapaça externa protetora presente em artrópodes que é periodicamente trocada durante o crescimento (muda)." },
+            { term: "Ardósia", definition: "Rocha metamórfica originada a partir da argila fina sob pressões tectónicas, famosa em Canelas por conservar fósseis achatados gigantes." }
+          ],
+          quiz: [
+            {
+              id: "trilo_q1",
+              type: "multiple",
+              questionText: "Por que razão as trilobites gigantes de Canelas são importantes cientificamente?",
+              options: [
+                "São as maiores do mundo e ajudam a datar rochas da Era Paleozoica.",
+                "Provam que os dinossauros sabiam nadar na ardósia.",
+                "Mostram que o clima em Portugal sempre foi quente e equatorial.",
+                "Eram as ancestrais das árvores de feto gigantes."
+              ],
+              correctAnswer: "São as maiores do mundo e ajudam a datar rochas da Era Paleozoica.",
+              explanation: "Canelas (Arouca) é mundialmente famosa pelas trilobites gigantes do período Ordovícico, excelentes como fósseis de idade da Era Paleozoica."
+            }
+          ]
+        },
+        {
+          id: "folha_fossil",
+          name: "Folha de Feto Fóssil",
+          imageUrl: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Fossil_fern_leaf.jpg",
+          images: [
+            "https://upload.wikimedia.org/wikipedia/commons/2/2f/Fossil_fern_leaf.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/c/cc/Neuropteris_carboniferous.jpg"
+          ],
+          era: EraGeologica.PALEOZOICO,
+          period: "Carbónico",
+          type: "Somatofóssil",
+          fossilizationProduct: "Incarbonização",
+          organism: "Fetos arbóreos e plantas vasculares sem flor",
+          age: "Cerca de 300 milhões de anos (M.a.)",
+          environment: "Florestas tropicais pantanosas super húmidas e quentes",
+          location: "Bacias carboníferas de São Pedro da Cova e Pejão (Portugal)",
+          description: "Durante o período Carbónico, extensas florestas tropicais cobriam as terras emersas. As folhas destas plantas gigantescas caíam em pântanos lodosos pobres em oxigénio, onde eram rapidamente soterradas por sedimentos argilosos finos. Ao longo de milhões de anos sob pressão e calor, perderam hidrogénio e oxigénio, enriquecendo-se em carbono e originando fósseis por incarbonização (película de carbono escura) e vastos jazigos de carvão mineral.",
+          curiosities: [
+            "No período Carbónico, alguns fetos podiam atingir o tamanho de árvores monumentais com mais de 30 metros de altura!",
+            "Os grandes depósitos de carvão mineral explorados durante a Revolução Industrial originaram-se da fossilização destas florestas pantanosas.",
+            "As nervuras das folhas fósseis encontram-se tão bem detalhadas que permitem estudar a circulação de fluidos celulares da flora paleozoica."
+          ],
+          importance: "Testemunham um período de elevadíssimo teor de oxigénio na atmosfera terrestre e revelam a paleogeografia de Portugal, que estava situado na zona equatorial do planeta no Paleozoico.",
+          glossary: [
+            { term: "Incarbonização", definition: "Processo de fossilização em que resíduos orgânicos de plantas acumulam carbono ao perderem substâncias gasosas voláteis." },
+            { term: "Anaeróbio", definition: "Ambiente desprovido de oxigénio livre, que impede a proliferação de bactérias e fungos decompositores tradicionais." },
+            { term: "Carvão Mineral", definition: "Rocha sedimentar combustível formada pela acumulação e transformação de restos de plantas terrestres soterrados." }
+          ],
+          quiz: [
+            {
+              id: "folha_q1",
+              type: "multiple",
+              questionText: "Qual é o nome do processo de fossilização destas folhas ricas em carbono?",
+              options: [
+                "Incarbonização",
+                "Mineralização profunda",
+                "Preservação em âmbar puro",
+                "Moldagem interna por gesso"
+              ],
+              correctAnswer: "Incarbonização",
+              explanation: "A incarbonização ocorre quando tecidos vegetais perdem gases sob condições sem oxigénio, restando uma película concentrada de carbono escuro que desenha as folhas."
+            }
+          ]
+        },
+        {
+          id: "inseto_ambar",
+          name: "Âmbar com Inseto",
+          imageUrl: "https://upload.wikimedia.org/wikipedia/commons/f/f6/Amber_with_insect.jpg",
+          images: [
+            "https://upload.wikimedia.org/wikipedia/commons/f/f6/Amber_with_insect.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/a/a8/Insects_in_amber_detail.jpg"
+          ],
+          era: EraGeologica.MESOZOICO,
+          period: "Cretácico",
+          type: "Somatofóssil",
+          fossilizationProduct: "Mumificação (ou conservação total)",
+          organism: "Mosquito ou formiga pré-histórica presa em resina de conífera",
+          age: "Cerca de 100 milhões de anos (M.a.)",
+          environment: "Florestas tropicais e densas de árvores resinosas próximas da costa",
+          location: "Jazigos fossilíferos do Cretácico na região de Cantanhede e Figueira da Foz (Portugal)",
+          description: "O âmbar é a resina gotejada de coníferas antigas que endureceu ao longo de milhões de anos. Se um inseto ou pequeno artrópode pousasse nas árvores, ficava preso no muco espesso protetor. Coberto por sucessivas camadas de resina, o organismo era selado de forma estanque, impedindo a entrada de água, bactérias ou ar, levando a um processo magnífico de conservação total tridimensional dos tecidos.",
+          curiosities: [
+            "O âmbar preserva detalhes anatómicos microscópicos incríveis, como asas hialinas transparentes e finos pelos tácteis das pernas dos artrópodes.",
+            "A palavra grega antiga para âmbar é 'elektron', que deu origem ao termo 'eletricidade' devido à sua propriedade física de acumular estática quando friccionado.",
+            "Embora o filme Jurassic Park explore a clonagem a partir de mosquitos em âmbar, o ADN degrada-se rapidamente no tempo geológico, inviabilizando qualquer ressurreição."
+          ],
+          importance: "Fornece um registo paleontológico único de organismos de corpo mole (como insetos, flores e pequenas aranhas) que seriam impossíveis de preservar em rochas sedimentares normais.",
+          glossary: [
+            { term: "Mumificação", definition: "Processo de conservação total em que as partes moles e rígidas do organismo são preservadas quase intactas, sem mineralização significativa." },
+            { term: "Resina", definition: "Substância viscosa secretada pelas árvores para selar fissuras na casca e afastar agentes patogénicos ou predadores xilófagos." },
+            { term: "Polimerização", definition: "Reação química em que as moléculas de resina se interligam ao longo de milhões de anos, originando a substância dura e estável conhecida como âmbar." }
+          ],
+          quiz: [
+            {
+              id: "ambar_q1",
+              type: "multiple",
+              questionText: "Que tipo de conservação o âmbar proporciona aos organismos nele aprisionados?",
+              options: [
+                "Mumificação (ou conservação total tridimensional de tecidos moles e duros)",
+                "Apenas moldagem bidimensional e carbonizada das asas",
+                "Mineralização de conchas e dentes em pedra de granito",
+                "Processo artificial de mumificação humana antiga"
+              ],
+              correctAnswer: "Mumificação (ou conservação total tridimensional de tecidos moles e duros)",
+              explanation: "Como o organismo fica isolado hermeticamente do oxigénio e da humidade exterior, a sua decomposição é travada, preservando os tecidos em formato 3D."
+            }
+          ]
+        }
+      ];
+
+      // --- APP STATE MANAGEMENT ---
+      let state = {
+        darkMode: true,
+        fontSizeStep: 1, // 1 = normal, 2 = large, 3 = extra large
+        fossils: [],
+        filterEra: 'todos',
+        searchQuery: '',
+        selectedFossilId: null,
+        activeModalTab: 'info', // 'info', 'curiosities', 'quiz'
+        botMessages: [
+          {
+            id: "bot_init",
+            role: "model",
+            text: "Olá, jovem paleontólogo! Sou o **PaleoBot** 🦕. Estou aqui para ajudar-te na disciplina de Ciências Naturais do 7.º ano!\n\nPodes perguntar-me sobre:\n- *O que é um fóssil?*\n- *Como funciona a fossilização?*\n- *Qual a diferença entre fóssil corporal e icnofóssil?*\n- *O que são amonites ou trilobites?*\n- *Em que eras geológicas viveram os dinossauros?*\n- *Porque é que os fósseis são importantes?*\n\nComo posso ajudar-te hoje?",
+            timestamp: getCurrentTime()
+          }
+        ],
+        isBotOpen: false,
+        quizAnswers: {}, // key: questionId, value: selectedOption
+        quizSubmitted: {} // key: questionId, value: boolean (answered)
+      };
+
+      // --- INITIALIZATION ---
+      window.addEventListener('DOMContentLoaded', () => {
+        initApp();
+      });
+
+      function initApp() {
+        // Load Dark Mode setting
+        if (localStorage.getItem('fossil_dark_mode') === 'false') {
+          state.darkMode = false;
+        }
+        applyDarkModeUI();
+
+        // Load Accessibility FontSize
+        const savedFontSize = localStorage.getItem('fossil_font_size');
+        if (savedFontSize) {
+          state.fontSizeStep = parseInt(savedFontSize);
+        }
+        applyFontSizeUI();
+
+        // Load Fossils Catalog
+        const stored = localStorage.getItem('virtual_museum_fossils');
+        if (stored) {
+          try {
+            const custom = JSON.parse(stored);
+            state.fossils = [...originalFossils, ...custom];
+          } catch(e) {
+            state.fossils = [...originalFossils];
+          }
+        } else {
+          state.fossils = [...originalFossils];
+        }
+
+        renderEraFilters();
+        renderFossils();
+        renderBotMessages();
+        renderBotSuggestions();
+
+        // Initialize Lucide Icons
+        lucide.createIcons();
+      }
+
+      function getCurrentTime() {
+        return new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+      }
+
+      // --- THEME & ACCESSIBILITY ---
+      function toggleDarkMode() {
+        state.darkMode = !state.darkMode;
+        localStorage.setItem('fossil_dark_mode', state.darkMode);
+        applyDarkModeUI();
+        renderFossils(); // Redraw fossils to ensure dark-themed borders and texts are perfect
+      }
+
+      function applyDarkModeUI() {
+        const themeIconContainer = document.getElementById('theme-icon-container');
+        if (state.darkMode) {
+          document.documentElement.classList.add('dark');
+          themeIconContainer.innerHTML = `<i data-lucide="sun" class="h-4 w-4"></i>`;
+        } else {
+          document.documentElement.classList.remove('dark');
+          themeIconContainer.innerHTML = `<i data-lucide="moon" class="h-4 w-4"></i>`;
+        }
+        lucide.createIcons();
+      }
+
+      function toggleFontSize() {
+        state.fontSizeStep = state.fontSizeStep === 3 ? 1 : state.fontSizeStep + 1;
+        localStorage.setItem('fossil_font_size', state.fontSizeStep);
+        applyFontSizeUI();
+      }
+
+      function applyFontSizeUI() {
+        const indicator = document.getElementById('font-scale-indicator');
+        indicator.innerText = state.fontSizeStep === 1 ? 'A' : state.fontSizeStep === 2 ? 'A+' : 'A++';
+
+        // Font scaling for standard elements
+        const bodyTextScales = ['text-xs', 'text-sm', 'text-base'];
+        const descTextScales = ['text-[11px] sm:text-xs', 'text-xs sm:text-sm', 'text-sm sm:text-base'];
+        
+        // Remove old size scales
+        document.body.classList.remove('text-xs', 'text-sm', 'text-base');
+        
+        // Apply new scales dynamically to relevant text boxes
+        const fontScaleClass = bodyTextScales[state.fontSizeStep - 1];
+        document.body.classList.add(fontScaleClass);
+
+        const desc = document.getElementById('hero-desc');
+        if (desc) {
+          desc.className = `mt-4 max-w-2xl mx-auto leading-relaxed dark:text-dark-sage text-warm-sage animate-fadeIn ` + descTextScales[state.fontSizeStep - 1];
+        }
+
+        renderFossils();
+        if (state.selectedFossilId) {
+          renderDetailModalContent();
+        }
+      }
+
+      // Dynamic text class inside render strings
+      function textClass(size) {
+        const scales = {
+          xs: ["text-[10px]", "text-xs", "text-sm"],
+          sm: ["text-xs", "text-sm", "text-base"],
+          base: ["text-sm", "text-base", "text-lg"],
+          lg: ["text-base", "text-lg", "text-xl"],
+          xl: ["text-lg", "text-xl", "text-2xl"],
+          "2xl": ["text-xl", "text-2xl", "text-3xl"],
+          "3xl": ["text-2xl", "text-3xl", "text-4xl"],
+          "4xl": ["text-3xl", "text-4xl", "text-5xl"],
+        };
+        const steps = scales[size] || scales["base"];
+        return steps[state.fontSizeStep - 1] || steps[0];
+      }
+
+      // --- FILTERS & SEARCH ---
+      function renderEraFilters() {
+        const filters = [
+          { id: 'todos', label: 'Ver Todos' },
+          { id: EraGeologica.PALEOZOICO, label: 'Paleozoico' },
+          { id: EraGeologica.MESOZOICO, label: 'Mesozoico' },
+          { id: EraGeologica.CENOZOICO, label: 'Cenozoico' }
+        ];
+
+        const container = document.getElementById('era-filters-container');
+        container.innerHTML = filters.map(tab => {
+          const isActive = state.filterEra === tab.id;
+          const activeClass = isActive 
+            ? "bg-warm-accent text-white font-extrabold shadow" 
+            : "dark:bg-dark-bg/45 dark:border-dark-border dark:text-dark-text dark:hover:bg-dark-panel bg-warm-bg border border-warm-border text-warm-text hover:bg-warm-header/40";
+          return `
+            <button onclick="setFilterEra('${tab.id}')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeClass}">
+              ${tab.label}
+            </button>
+          `;
+        }).join('');
+      }
+
+      function setFilterEra(era) {
+        state.filterEra = era;
+        renderEraFilters();
+        renderFossils();
+      }
+
+      function handleSearch(val) {
+        state.searchQuery = val;
+        const clearBtn = document.getElementById('search-clear-btn');
+        if (val.trim() !== '') {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+        renderFossils();
+      }
+
+      function clearSearch() {
+        const searchBar = document.getElementById('fossil-search-bar');
+        searchBar.value = '';
+        handleSearch('');
+      }
+
+      // --- RENDER CATALOG ---
+      function renderFossils() {
+        const filtered = state.fossils.filter(f => {
+          const matchesEra = state.filterEra === 'todos' || f.era === state.filterEra;
+          const query = state.searchQuery.toLowerCase().trim();
+          const matchesSearch = query === '' || 
+            f.name.toLowerCase().includes(query) ||
+            f.organism.toLowerCase().includes(query) ||
+            f.type.toLowerCase().includes(query) ||
+            (f.groupName && f.groupName.toLowerCase().includes(query));
+          return matchesEra && matchesSearch;
+        });
+
+        const grid = document.getElementById('fossils-grid');
+        const resetContainer = document.getElementById('reset-catalog-container');
+
+        // Toggle reset catalog button visibility
+        const hasCustom = state.fossils.some(f => f.isCustom);
+        if (hasCustom) {
+          resetContainer.classList.remove('hidden');
+        } else {
+          resetContainer.classList.add('hidden');
+        }
+
+        if (filtered.length === 0) {
+          grid.className = "block w-full text-center py-20 rounded-2xl border border-dashed dark:border-stone-800 dark:bg-stone-900/10 dark:text-stone-400 border-amber-200 bg-amber-50/5 text-stone-500 animate-fadeIn";
+          grid.innerHTML = `
+            <i data-lucide="compass" class="h-10 w-10 mx-auto text-amber-500 opacity-60 animate-pulse mb-3"></i>
+            <h4 class="font-bold ${textClass('sm')}">Nenhum fóssil encontrado</h4>
+            <p class="${textClass('xs')} mt-1 max-w-xs mx-auto">
+              Tenta pesquisar por outro termo ou escolhe uma era geológica diferente nos filtros.
+            </p>
+          `;
+          lucide.createIcons();
+          return;
+        }
+
+        grid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 animate-fadeIn";
+        grid.innerHTML = filtered.map(fossil => {
+          const eraColor = fossil.era === EraGeologica.PALEOZOICO 
+            ? "border-emerald-500/20 text-emerald-500 bg-emerald-500/5" 
+            : fossil.era === EraGeologica.MESOZOICO 
+            ? "border-amber-500/20 text-amber-500 bg-amber-500/5" 
+            : "border-sky-500/20 text-sky-500 bg-sky-500/5";
+
+          const cardBg = state.darkMode 
+            ? "bg-dark-card hover:bg-dark-panel border-dark-border" 
+            : "bg-white hover:bg-warm-paper border-warm-border/50";
+
+          return `
+            <article id="fossil-card-${fossil.id}" class="group rounded-2xl border-2 overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ${cardBg}">
+              <!-- Cover image -->
+              <div class="relative h-48 w-full overflow-hidden bg-stone-950">
+                <img
+                  src="${fossil.imageUrl}"
+                  alt="${fossil.name}"
+                  referrerpolicy="no-referrer"
+                  class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onerror="this.src='https://images.unsplash.com/photo-1507041957456-9c397ce39c97?w=600&auto=format&fit=crop&q=80'"
+                />
+                
+                <!-- Student presentation tag if custom -->
+                ${fossil.isCustom ? `
+                  <div class="absolute top-3 left-3 bg-warm-accent/90 backdrop-blur-md border border-white/20 text-white font-extrabold text-[9px] uppercase tracking-widest px-2 py-1 rounded-lg flex items-center gap-1 shadow">
+                    <i data-lucide="user" class="h-3 w-3"></i>
+                    <span>Trabalho de Alunos</span>
+                  </div>
+                ` : ''}
+
+                <!-- Era tag on image -->
+                <div class="absolute bottom-3 right-3 text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-lg border backdrop-blur-md ${eraColor}">
+                  ${fossil.era}
+                </div>
+              </div>
+
+              <!-- Content panel -->
+              <div class="p-5 flex flex-col justify-between h-[180px]">
+                <div>
+                  <div class="flex items-center gap-1.5 text-[9px] font-extrabold uppercase tracking-widest dark:text-dark-sage text-warm-sage">
+                    <i data-lucide="book-open" class="h-3 w-3"></i>
+                    <span>${fossil.type}</span>
+                  </div>
+                  <h3 class="font-serif font-extrabold tracking-tight mt-1 group-hover:text-warm-accent transition-colors ${textClass('lg')}">
+                    ${fossil.name}
+                  </h3>
+                  <p class="line-clamp-2 text-stone-400 dark:text-stone-300 text-[11px] mt-1.5 leading-relaxed">
+                    ${fossil.description}
+                  </p>
+                </div>
+
+                <div class="flex items-center justify-between border-t pt-3 dark:border-dark-border/40 border-warm-border/40 mt-3">
+                  <span class="text-[9px] font-bold tracking-wider dark:text-dark-sage text-warm-sage">
+                    ${fossil.groupName ? `Autor: ${fossil.groupName}` : `Coleção Geral`}
+                  </span>
+                  
+                  <button onclick="openExploreModal('${fossil.id}')" class="px-3.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider bg-warm-accent text-white hover:bg-warm-accent/90 transition-all flex items-center gap-1 shadow-sm active:scale-95 cursor-pointer">
+                    <span>Explorar</span>
+                    <i data-lucide="compass" class="h-3.5 w-3.5"></i>
+                  </button>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+        lucide.createIcons();
+      }
+
+      // --- CUSTOM FOSSIL STORAGE & SUBMIT ---
+      function openAddModal() {
+        document.getElementById('add-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeAddModal() {
+        document.getElementById('add-modal').classList.add('hidden');
+        document.body.style.overflow = '';
+        document.getElementById('add-fossil-form').reset();
+      }
+
+      function saveCustomFossil(e) {
+        e.preventDefault();
+        const form = document.getElementById('add-fossil-form');
+        const formData = new FormData(form);
+
+        // Curiosities array
+        const curiosities = [];
+        if (formData.get('fossil-curiosity-1')) curiosities.push(formData.get('fossil-curiosity-1'));
+        if (formData.get('fossil-curiosity-2')) curiosities.push(formData.get('fossil-curiosity-2'));
+        if (formData.get('fossil-curiosity-3')) curiosities.push(formData.get('fossil-curiosity-3'));
+
+        // Images array
+        const imageUrl = formData.get('fossil-image');
+        const images = [imageUrl];
+        if (formData.get('fossil-image-sec1')) images.push(formData.get('fossil-image-sec1'));
+        if (formData.get('fossil-image-sec2')) images.push(formData.get('fossil-image-sec2'));
+
+        // Glossary array
+        const glossary = [];
+        if (formData.get('fossil-glossary-term-1')) {
+          glossary.push({
+            term: formData.get('fossil-glossary-term-1'),
+            definition: formData.get('fossil-glossary-def-1')
+          });
+        }
+        if (formData.get('fossil-glossary-term-2') && formData.get('fossil-glossary-def-2')) {
+          glossary.push({
+            term: formData.get('fossil-glossary-term-2'),
+            definition: formData.get('fossil-glossary-def-2')
+          });
+        }
+        if (formData.get('fossil-glossary-term-3') && formData.get('fossil-glossary-def-3')) {
+          glossary.push({
+            term: formData.get('fossil-glossary-term-3'),
+            definition: formData.get('fossil-glossary-def-3')
+          });
+        }
+
+        // Quiz options (shuffled helper)
+        const options = [
+          formData.get('quiz-correct'),
+          formData.get('quiz-incorrect-1'),
+          formData.get('quiz-incorrect-2'),
+          formData.get('quiz-incorrect-3')
+        ].filter(Boolean);
+
+        const customFossilId = "custom_" + Date.now();
+        const customFossil = {
+          id: customFossilId,
+          name: formData.get('fossil-name'),
+          groupName: formData.get('fossil-group'),
+          imageUrl: imageUrl,
+          images: images,
+          era: formData.get('fossil-era'),
+          period: formData.get('fossil-period'),
+          type: formData.get('fossil-type'),
+          fossilizationProduct: formData.get('fossil-product'),
+          organism: formData.get('fossil-organism'),
+          age: formData.get('fossil-age'),
+          environment: formData.get('fossil-environment'),
+          location: formData.get('fossil-location'),
+          description: formData.get('fossil-desc'),
+          curiosities: curiosities,
+          importance: formData.get('fossil-importance'),
+          isCustom: true,
+          glossary: glossary,
+          quiz: [
+            {
+              id: customFossilId + "_q1",
+              type: "multiple",
+              questionText: formData.get('quiz-question'),
+              options: options,
+              correctAnswer: formData.get('quiz-correct'),
+              explanation: formData.get('quiz-explanation')
+            }
+          ]
+        };
+
+        // Save to localStorage
+        let stored = [];
+        try {
+          const raw = localStorage.getItem('virtual_museum_fossils');
+          if (raw) stored = JSON.parse(raw);
+        } catch(err) {}
+
+        stored.push(customFossil);
+        localStorage.setItem('virtual_museum_fossils', JSON.stringify(stored));
+
+        // Update state and refresh UI
+        state.fossils.push(customFossil);
+        closeAddModal();
+        renderFossils();
+
+        // Smooth scroll to the newly created element
+        setTimeout(() => {
+          const elem = document.getElementById(`fossil-card-${customFossilId}`);
+          if (elem) {
+            elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            elem.classList.add('ring-2', 'ring-warm-accent');
+            setTimeout(() => elem.classList.remove('ring-2', 'ring-warm-accent'), 2500);
+          }
+        }, 300);
+      }
+
+      function handleResetCatalog() {
+        if (confirm("Tens a certeza que desejas repor o catálogo original e eliminar todas as apresentações feitas pelos alunos?")) {
+          localStorage.removeItem('virtual_museum_fossils');
+          state.fossils = [...originalFossils];
+          renderFossils();
+        }
+      }
+
+      // --- DETAIL MODAL LOGIC ---
+      function openExploreModal(id) {
+        state.selectedFossilId = id;
+        state.activeModalTab = 'info';
+        state.activeFossilImageIndex = 0; // Reset image index
+        state.quizAnswers = {};
+        state.quizSubmitted = {};
+
+        const modal = document.getElementById('detail-modal');
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        renderDetailModalContent();
+      }
+
+      function closeExploreModal() {
+        const modal = document.getElementById('detail-modal');
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+        state.selectedFossilId = null;
+      }
+
+      function setModalTab(tab) {
+        state.activeModalTab = tab;
+        renderDetailModalContent();
+      }
+
+      function changeModalImage(idx) {
+        state.activeFossilImageIndex = idx;
+        renderDetailModalContent();
+      }
+
+      function renderDetailModalContent() {
+        const fossil = state.fossils.find(f => f.id === state.selectedFossilId);
+        if (!fossil) return;
+
+        const modal = document.getElementById('detail-modal');
+        const eraColor = fossil.era === EraGeologica.PALEOZOICO 
+          ? "border-emerald-500/20 text-emerald-500 bg-emerald-500/5" 
+          : fossil.era === EraGeologica.MESOZOICO 
+          ? "border-amber-500/20 text-amber-500 bg-amber-500/5" 
+          : "border-sky-500/20 text-sky-500 bg-sky-500/5";
+
+        const tabClass = (tab) => state.activeModalTab === tab 
+          ? "border-b-2 border-warm-accent text-warm-accent font-extrabold" 
+          : "text-stone-400 hover:text-stone-300 border-b-2 border-transparent";
+
+        const bgClass = state.darkMode 
+          ? "bg-dark-panel border-dark-border text-white" 
+          : "bg-warm-paper border-warm-border text-warm-text";
+
+        // Active image selection
+        const imagesList = fossil.images && fossil.images.length > 0 ? fossil.images : [fossil.imageUrl];
+        const activeImgIndex = state.activeFossilImageIndex || 0;
+        const currentActiveImg = imagesList[activeImgIndex] || fossil.imageUrl;
+
+        // Generate content for the active tab
+        let tabContentHtml = '';
+
+        if (state.activeModalTab === 'info') {
+          tabContentHtml = `
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fadeIn">
+              <div class="space-y-3.5">
+                <div>
+                  <h5 class="text-[10px] font-extrabold uppercase tracking-widest dark:text-dark-sage text-warm-sage">Organismo Representado</h5>
+                  <p class="font-medium mt-0.5">${fossil.organism}</p>
+                </div>
+                <div>
+                  <h5 class="text-[10px] font-extrabold uppercase tracking-widest dark:text-dark-sage text-warm-sage">Idade Estimada / Aproximada</h5>
+                  <p class="font-medium mt-0.5">${fossil.age}</p>
+                </div>
+                <div>
+                  <h5 class="text-[10px] font-extrabold uppercase tracking-widest dark:text-dark-sage text-warm-sage">Ambiente em que viveu (Paleoambiente)</h5>
+                  <p class="font-medium mt-0.5">${fossil.environment}</p>
+                </div>
+              </div>
+
+              <div class="space-y-3.5">
+                <div>
+                  <h5 class="text-[10px] font-extrabold uppercase tracking-widest dark:text-dark-sage text-warm-sage">Local onde pode ser encontrado</h5>
+                  <p class="font-medium mt-0.5 flex items-start gap-1">
+                    <i data-lucide="compass" class="h-3.5 w-3.5 mt-0.5 shrink-0 text-warm-accent"></i>
+                    <span>${fossil.location}</span>
+                  </p>
+                </div>
+                <div>
+                  <h5 class="text-[10px] font-extrabold uppercase tracking-widest dark:text-dark-sage text-warm-sage">Era & Período Geológico</h5>
+                  <p class="font-medium mt-0.5">${fossil.era} / ${fossil.period || 'Não especificado'}</p>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <h5 class="text-[10px] font-extrabold uppercase tracking-widest dark:text-dark-sage text-warm-sage">Tipo de Fóssil</h5>
+                    <span class="inline-block mt-1 text-[10px] font-extrabold px-2.5 py-1 rounded bg-warm-accent/10 border border-warm-accent/25 text-warm-accent">${fossil.type}</span>
+                  </div>
+                  <div>
+                    <h5 class="text-[10px] font-extrabold uppercase tracking-widest dark:text-dark-sage text-warm-sage">Produto Final</h5>
+                    <span class="inline-block mt-1 text-[10px] font-extrabold px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-500 dark:text-emerald-400">${fossil.fossilizationProduct || 'Molde / Mineralização'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sm:col-span-2 pt-3 border-t dark:border-dark-border/40 border-warm-border/40">
+                <h5 class="text-[10px] font-extrabold uppercase tracking-widest dark:text-dark-sage text-warm-sage mb-1">Enquadramento Científico (Descrição)</h5>
+                <p class="leading-relaxed text-stone-600 dark:text-stone-300 font-normal select-text">${fossil.description}</p>
+              </div>
+            </div>
+          `;
+        } else if (state.activeModalTab === 'curiosities') {
+          tabContentHtml = `
+            <div class="space-y-4 animate-fadeIn">
+              <div>
+                <h5 class="text-[10px] font-extrabold uppercase tracking-widest text-warm-accent mb-2 flex items-center gap-1">
+                  <i data-lucide="compass" class="h-3.5 w-3.5"></i>
+                  <span>Curiosidades Paleontológicas</span>
+                </h5>
+                <ul class="space-y-2.5 pl-4 list-disc text-stone-600 dark:text-stone-300 leading-relaxed font-normal">
+                  ${fossil.curiosities.map(c => `<li>${c}</li>`).join('')}
+                </ul>
+              </div>
+
+              <div class="pt-4 border-t dark:border-dark-border/40 border-warm-border/40">
+                <h5 class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-500 mb-1 flex items-center gap-1">
+                  <i data-lucide="book-open" class="h-3.5 w-3.5"></i>
+                  <span>Importância para a História da Terra</span>
+                </h5>
+                <p class="leading-relaxed text-stone-600 dark:text-stone-300 font-normal">${fossil.importance}</p>
+              </div>
+            </div>
+          `;
+        } else if (state.activeModalTab === 'quiz') {
+          // Glossary items first
+          const glossaryHtml = fossil.glossary && fossil.glossary.length > 0 
+            ? `
+              <div class="mb-5 p-3 rounded-xl dark:bg-dark-bg/40 bg-warm-header/40 border dark:border-dark-border border-warm-border">
+                <h6 class="font-serif font-extrabold text-[10px] uppercase tracking-wider text-warm-accent mb-1.5 flex items-center gap-1">
+                  <i data-lucide="book-open" class="h-3.5 w-3.5"></i>
+                  <span>Mini-Glossário de Apoio</span>
+                </h6>
+                <div class="space-y-2">
+                  ${fossil.glossary.map(g => `
+                    <div>
+                      <strong class="dark:text-dark-text text-warm-text font-bold text-[10px]">${g.term}:</strong>
+                      <span class="text-stone-500 dark:text-dark-sage text-[10px]">${g.definition}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : '';
+
+          // Quiz questions
+          const quizHtml = fossil.quiz && fossil.quiz.length > 0
+            ? `
+              <div>
+                <h5 class="text-[11px] font-extrabold uppercase tracking-widest text-warm-accent mb-3 flex items-center gap-1">
+                  <i data-lucide="compass" class="h-3.5 w-3.5"></i>
+                  <span>Mini-Quiz do Fóssil</span>
+                </h5>
+                <div class="space-y-4">
+                  ${fossil.quiz.map((q, idx) => {
+                    const isAnswered = state.quizSubmitted[q.id];
+                    const chosen = state.quizAnswers[q.id];
+                    
+                    let optionsHtml = '';
+                    if (q.type === 'multiple') {
+                      optionsHtml = q.options.map(opt => {
+                        let btnClass = 'dark:bg-dark-bg border-dark-border hover:bg-dark-border/50 bg-white border-stone-200 hover:bg-stone-100';
+                        if (isAnswered) {
+                          if (opt === q.correctAnswer) {
+                            btnClass = 'bg-emerald-500/20 border-emerald-500 text-emerald-500 font-bold';
+                          } else if (opt === chosen) {
+                            btnClass = 'bg-rose-500/20 border-rose-500 text-rose-500';
+                          } else {
+                            btnClass = 'opacity-50 dark:bg-dark-bg bg-white';
+                          }
+                        }
+                        return `
+                          <button 
+                            onclick="submitQuizAnswer('${q.id}', '${opt.replace(/'/g, "\\'")}')" 
+                            ${isAnswered ? 'disabled' : ''} 
+                            class="w-full text-left p-2.5 rounded-lg border transition-all text-[11px] font-normal cursor-pointer ${btnClass}">
+                            ${opt}
+                          </button>
+                        `;
+                      }).join('');
+                    } else {
+                      // Boolean type
+                      const options = [
+                        { val: 'True', label: 'Verdadeiro' },
+                        { val: 'False', label: 'Falso' }
+                      ];
+                      optionsHtml = `<div class="grid grid-cols-2 gap-3">` + options.map(opt => {
+                        let btnClass = 'dark:bg-dark-bg border-dark-border hover:bg-dark-border/50 bg-white border-stone-200 hover:bg-stone-100';
+                        if (isAnswered) {
+                          if (opt.val === q.correctAnswer) {
+                            btnClass = 'bg-emerald-500/20 border-emerald-500 text-emerald-500 font-bold';
+                          } else if (opt.val === chosen) {
+                            btnClass = 'bg-rose-500/20 border-rose-500 text-rose-500';
+                          } else {
+                            btnClass = 'opacity-50 dark:bg-dark-bg bg-white';
+                          }
+                        }
+                        return `
+                          <button 
+                            onclick="submitQuizAnswer('${q.id}', '${opt.val}')" 
+                            ${isAnswered ? 'disabled' : ''} 
+                            class="w-full text-center p-2.5 rounded-lg border transition-all text-[11px] font-normal cursor-pointer ${btnClass}">
+                            ${opt.label}
+                          </button>
+                        `;
+                      }).join('') + `</div>`;
+                    }
+
+                    return `
+                      <div class="p-4 rounded-xl dark:bg-dark-bg/40 bg-white/40 border dark:border-dark-border border-warm-border">
+                        <span class="text-[9px] font-extrabold uppercase text-warm-accent tracking-widest">Questão ${idx+1}</span>
+                        <p class="font-bold text-[12px] mt-1 mb-2.5 dark:text-dark-text text-warm-text">${q.questionText}</p>
+                        <div class="space-y-2">
+                          ${optionsHtml}
+                        </div>
+
+                        ${isAnswered ? `
+                          <div class="mt-3 p-3 rounded-lg animate-fadeIn text-[10px] leading-relaxed dark:bg-dark-panel/40 bg-stone-100 border-l-4 ${chosen === q.correctAnswer ? 'border-emerald-500' : 'border-rose-500'}">
+                            <div class="flex items-center gap-1.5 font-bold uppercase mb-1 ${chosen === q.correctAnswer ? 'text-emerald-500' : 'text-rose-500'}">
+                              <i data-lucide="${chosen === q.correctAnswer ? 'check' : 'x'}" class="h-4 w-4"></i>
+                              <span>${chosen === q.correctAnswer ? 'Incrível! Resposta Correta' : 'Oops, incorreto!'}</span>
+                            </div>
+                            <span class="dark:text-stone-300 text-stone-600 font-normal">${q.explanation}</span>
+                          </div>
+                        ` : ''}
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            ` : '';
+
+          tabContentHtml = `
+            <div class="space-y-4 animate-fadeIn">
+              ${glossaryHtml}
+              ${quizHtml}
+            </div>
+          `;
+        }
+
+        modal.innerHTML = `
+          <div class="w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl border flex flex-col ${bgClass} animate-fadeIn">
+            
+            <!-- Modal Cover header image -->
+            <div class="relative h-64 w-full shrink-0 bg-stone-950">
+              <img src="${currentActiveImg}" alt="${fossil.name}" class="w-full h-full object-cover transition-all duration-300" referrerpolicy="no-referrer" onerror="this.src='https://images.unsplash.com/photo-1507041957456-9c397ce39c97?w=600&auto=format&fit=crop&q=80'">
+              
+              <!-- Subtle dark layer to ensure text contrast -->
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent"></div>
+              
+              <button onclick="closeExploreModal()" class="absolute top-4 right-4 h-9 w-9 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center border border-white/20 transition-colors shadow cursor-pointer text-white z-10">
+                <i data-lucide="x" class="h-5 w-5"></i>
+              </button>
+ 
+              <div class="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                <div>
+                  <span class="text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded border backdrop-blur-md inline-block mb-1.5 ${eraColor}">
+                    ${fossil.era}
+                  </span>
+                  <h2 class="font-serif font-extrabold tracking-tight text-white ${textClass('2xl')}">
+                    ${fossil.name}
+                  </h2>
+                  ${fossil.groupName ? `
+                    <p class="text-[9px] font-bold text-stone-300 uppercase tracking-widest mt-1 flex items-center gap-1">
+                      <i data-lucide="user" class="h-3 w-3"></i>
+                      <span>Trabalho de Alunos: ${fossil.groupName}</span>
+                    </p>
+                  ` : ''}
+                </div>
+ 
+                <!-- Thumbnail gallery indicator overlay -->
+                ${imagesList.length > 1 ? `
+                  <div class="flex items-center gap-1.5 bg-black/55 backdrop-blur-sm p-1.5 rounded-lg border border-white/10 shrink-0">
+                    ${imagesList.map((img, idx) => {
+                      const activeRing = idx === activeImgIndex ? 'ring-2 ring-warm-accent opacity-100 scale-105' : 'opacity-70 hover:opacity-100 hover:scale-102';
+                      return `
+                        <button onclick="changeModalImage(${idx})" class="h-8 w-12 rounded overflow-hidden border border-white/20 transition-all cursor-pointer ${activeRing}">
+                          <img src="${img}" class="h-full w-full object-cover" referrerpolicy="no-referrer">
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Tab selections navigation -->
+            <div class="flex items-center gap-4 px-6 border-b dark:border-dark-border border-warm-border text-xs shrink-0 dark:bg-dark-panel bg-warm-header/40">
+              <button onclick="setModalTab('info')" class="py-3 px-1 transition-all font-bold uppercase cursor-pointer ${tabClass('info')}">
+                Ficha Técnica & Info
+              </button>
+              <button onclick="setModalTab('curiosities')" class="py-3 px-1 transition-all font-bold uppercase cursor-pointer ${tabClass('curiosities')}">
+                Curiosidades & Importância
+              </button>
+              <button onclick="setModalTab('quiz')" class="py-3 px-1 transition-all font-bold uppercase cursor-pointer ${tabClass('quiz')}">
+                Glossário & Quiz
+              </button>
+            </div>
+
+            <!-- Scrollable Tab active content -->
+            <div class="p-6 overflow-y-auto flex-1 text-xs">
+              ${tabContentHtml}
+            </div>
+
+            <!-- Modal footer controls -->
+            <div class="p-4 border-t dark:border-dark-border border-warm-border flex justify-end shrink-0 dark:bg-dark-panel bg-warm-header/20">
+              <button onclick="closeExploreModal()" class="px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-warm-accent text-white hover:bg-warm-accent/90 shadow cursor-pointer">
+                Concluir Exploração
+              </button>
+            </div>
+
+          </div>
+        `;
+        lucide.createIcons();
+      }
+
+      function submitQuizAnswer(qId, selected) {
+        state.quizAnswers[qId] = selected;
+        state.quizSubmitted[qId] = true;
+        renderDetailModalContent();
+      }
+
+      // --- PALEOBOT EDUCATIONAL CHAT SYSTEM ---
+      function toggleBot() {
+        state.isBotOpen = !state.isBotOpen;
+        const box = document.getElementById('paleobot-chatbox');
+        if (state.isBotOpen) {
+          box.classList.remove('scale-90', 'opacity-0', 'pointer-events-none');
+          box.classList.add('scale-100', 'opacity-100');
+          // Scroll messages box
+          setTimeout(scrollBotToBottom, 100);
+        } else {
+          box.classList.add('scale-90', 'opacity-0', 'pointer-events-none');
+          box.classList.remove('scale-100', 'opacity-100');
+        }
+      }
+
+      function scrollBotToBottom() {
+        const box = document.getElementById('bot-messages-box');
+        box.scrollTop = box.scrollHeight;
+      }
+
+      function renderBotMessages() {
+        const box = document.getElementById('bot-messages-box');
+        box.innerHTML = state.botMessages.map(msg => {
+          const isUser = msg.role === 'user';
+          const outerClass = isUser ? "flex justify-end" : "flex justify-start";
+          const bubbleClass = isUser 
+            ? "bg-warm-accent text-white rounded-2xl rounded-tr-none px-3.5 py-2 max-w-[85%] font-medium" 
+            : "dark:bg-dark-bg bg-warm-header dark:text-white text-warm-text rounded-2xl rounded-tl-none px-3.5 py-2 max-w-[85%] border dark:border-dark-border border-warm-border shadow-sm font-normal";
+          
+          return `
+            <div class="${outerClass} animate-fadeIn">
+              <div class="${bubbleClass}">
+                <p class="leading-relaxed select-text">${formatMarkdown(msg.text)}</p>
+                <span class="block text-[8px] text-right mt-1 opacity-70 font-mono">${msg.timestamp}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+        scrollBotToBottom();
+      }
+
+      // Simple markdown highlighting helper (bold, lists, emojis)
+      function formatMarkdown(text) {
+        return text
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/\n\n/g, '<br><br>')
+          .replace(/\n/g, '<br>');
+      }
+
+      const botSuggestionsList = [
+        "O que é um fóssil?",
+        "Como se forma um fóssil?",
+        "O que são icnofósseis?",
+        "Diz-me curiosidades"
+      ];
+
+      function renderBotSuggestions() {
+        const sContainer = document.getElementById('bot-suggestions');
+        sContainer.innerHTML = botSuggestionsList.map(s => `
+          <button 
+            type="button" 
+            onclick="sendSuggestedPrompt('${s.replace(/'/g, "\\'")}')" 
+            class="shrink-0 px-2.5 py-1 text-[10px] rounded-lg border dark:border-dark-border dark:bg-dark-panel dark:hover:bg-dark-bg bg-white border-warm-border hover:bg-warm-bg dark:text-dark-sage text-warm-sage transition-colors font-semibold cursor-pointer whitespace-nowrap">
+            ${s}
+          </button>
+        `).join('');
+      }
+
+      function sendSuggestedPrompt(text) {
+        submitBotMessage(text);
+      }
+
+      function handleBotSendMessage(e) {
+        e.preventDefault();
+        const input = document.getElementById('bot-user-input');
+        const text = input.value.trim();
+        if (text === '') return;
+        
+        input.value = '';
+        submitBotMessage(text);
+      }
+
+      function submitBotMessage(userText) {
+        const time = getCurrentTime();
+        // Append user message
+        state.botMessages.push({
+          id: "user_" + Date.now(),
+          role: "user",
+          text: userText,
+          timestamp: time
+        });
+        renderBotMessages();
+
+        // Render loading state
+        const box = document.getElementById('bot-messages-box');
+        const loadingId = "bot_loading";
+        box.innerHTML += `
+          <div id="${loadingId}" class="flex justify-start animate-fadeIn">
+            <div class="dark:bg-dark-bg bg-warm-header dark:text-white text-warm-text rounded-2xl rounded-tl-none px-3.5 py-2 max-w-[85%] border dark:border-dark-border border-warm-border shadow-sm flex items-center gap-1">
+              <span class="h-1.5 w-1.5 rounded-full bg-warm-accent animate-bounce" style="animation-delay: 0s"></span>
+              <span class="h-1.5 w-1.5 rounded-full bg-warm-accent animate-bounce" style="animation-delay: 0.15s"></span>
+              <span class="h-1.5 w-1.5 rounded-full bg-warm-accent animate-bounce" style="animation-delay: 0.3s"></span>
+            </div>
+          </div>
+        `;
+        scrollBotToBottom();
+
+        // Respond after a delay with mock thinking
+        setTimeout(() => {
+          // Remove loading bubble
+          const loadingElem = document.getElementById(loadingId);
+          if (loadingElem) loadingElem.remove();
+
+          const replyText = getBotOfflineResponse(userText);
+          state.botMessages.push({
+            id: "bot_" + Date.now(),
+            role: "model",
+            text: replyText,
+            timestamp: getCurrentTime()
+          });
+          renderBotMessages();
+        }, 850);
+      }
+
+      function getBotOfflineResponse(prompt) {
+        const textLower = prompt.toLowerCase();
+        
+        if (textLower.includes("o que é um fóssil") || textLower.includes("o que é fóssil") || textLower.includes("defina fóssil") || textLower.includes("fóssil?")) {
+          return "Um **fóssil** é qualquer resto (como dentes, conchas ou ossos) ou vestígio (como pegadas, ovos ou fezes) de um ser vivo do passado que ficou preservado nas rochas sedimentares ao longo de milhares ou milhões de anos! 🦕 São verdadeiras janelas para o passado do nosso planeta.";
+        } else if (textLower.includes("somatofóssil") || textLower.includes("somatofosseis") || textLower.includes("fóssil corporal") || textLower.includes("fósseis corporais") || textLower.includes("corporal")) {
+          return "Excelente pergunta para o 7.º ano! Um **Somatofóssil** (ou fóssil corporal) é um fóssil que consiste em restos de partes do corpo do próprio organismo, quer sejam duras (como ossos, dentes, conchas ou carapaças) ou, mais raramente, moles (como pele ou músculos). O dente de Megalodonte e a folha de feto são ótimos exemplos de somatofósseis! 🦴";
+        } else if (textLower.includes("icnofóssil") || textLower.includes("icnofósseis") || textLower.includes("vestígio") || textLower.includes("pegada") || textLower.includes("trilho")) {
+          return "Excelente conceito do 7.º ano! Um **Icnofóssil** é um fóssil de atividade ou vestígio. Não é o corpo do animal em si, mas sim o seu registo: como pegadas de dinossauro (por exemplo, na Serra de Aire ou Cabo Espichel), marcas de dentes, túneis escavados ou até fezes fossilizadas (coprólitos)! Revelam muito sobre o comportamento e locomoção do animal no passado. 🐾";
+        } else if (textLower.includes("incarbonização") || textLower.includes("incarbonizacao") || textLower.includes("carbonização")) {
+          return "A **Incarbonização** é um processo de fossilização muito comum em organismos ricos em carbono, como plantas (por exemplo, fetos e árvores) e animais com carapaça quitinosa. Ocorre quando o organismo é soterrado rapidamente num ambiente com pouco oxigénio, perdendo gradualmente os elementos voláteis (como hidrogénio e oxigénio) e enriquecendo em carbono. A nossa folha de feto fossilizada é o melhor exemplo deste processo! 🌿";
+        } else if (textLower.includes("mineralização") || textLower.includes("mineralizacao") || textLower.includes("recristalização")) {
+          return "A **Mineralização** (ou petrificação) é o processo de fossilização em que os tecidos biológicos porosos (como ossos ou dentes de dinossauros, conchas ou troncos de árvores) são preenchidos e endurecidos por minerais (como sílica, calcite ou pirite) transportados pela água subterrânea que circula nos poros da rocha sedimentar. O dente de Megalodonte e o tronco petrificado formaram-se assim! 🪨";
+        } else if (textLower.includes("amonite") || textLower.includes("amonete")) {
+          return "As **amonites** eram moluscos marinhos de concha espiralada que viveram na Era Mesozoica! Elas dominavam os mares enquanto os dinossauros governavam a terra. São excelentes fósseis de idade. Em Portugal, podes encontrar muitos exemplares bonitos nas falésias de Peniche ou da Figueira da Foz! 🐚";
+        } else if (textLower.includes("trilobite") || textLower.includes("trilobites")) {
+          return "As **trilobites** foram artrópodes marinhos fantásticos com uma carapaça dura dividida em três partes (lobos). Viveram apenas na Era Paleozoica. Sabias que em **Arouca (Canelas)** temos os maiores fósseis de trilobites gigantes do mundo? Elas rastejavam no fundo de mares pouco profundos de Portugal há 450 milhões de anos! 🪳";
+        } else if (textLower.includes("dino") || textLower.includes("dinossauro") || textLower.includes("dinossáurio") || textLower.includes("megalodonte")) {
+          return "Tanto os **dinossauros** como o **Megalodonte** foram predadores titânicos de eras passadas! Os dinossauros dominaram a terra na Era Mesozoica, e as suas pistas de pegadas em Portugal (Serra de Aire) são mundiais. Já o dente de Megalodonte representa o maior tubarão que alguma vez viveu na Era Cenozoica. 🦖🦈";
+        } else if (textLower.includes("era") || textLower.includes("eras") || textLower.includes("paleozoico") || textLower.includes("mesozoico") || textLower.includes("cenozoico")) {
+          return "A escala do tempo geológico divide-se em grandes Eras:\n\n1️⃣ **Paleozoico**: A era dominada pelas trilobites e pelos primeiros peixes e florestas antigas.\n2️⃣ **Mesozoico**: A era dos dinossauros na terra e das amonites no mar.\n3️⃣ **Cenozoico**: A era que vai até hoje, dominada por mamíferos, aves, plantas com flor e, claro, o aparecimento do Homem! 🌍";
+        } else if (textLower.includes("importante") || textLower.includes("importância") || textLower.includes("para que serve") || textLower.includes("porque é que os fósseis são importantes")) {
+          return "Os fósseis são super importantes por três grandes razões:\n\n1️⃣ **Raciocínio Evolutivo**: Permitem compreender a evolução e o aparecimento/extinção de espécies.\n2️⃣ **Fósseis de Idade**: Ajudam a datar as rochas sedimentares.\n3️⃣ **Fósseis de Fácies**: Ajudam a reconstituir o ambiente (paleoambiente) e o clima (paleoclima) do passado, como se fossemos detetives do tempo! 🔬";
+        } else if (textLower.includes("fossilização") || textLower.includes("como se forma") || textLower.includes("processo") || textLower.includes("fossilizar")) {
+          return "A fossilização é um processo extremamente raro! Geralmente envolve:\n\n1️⃣ Morte do organismo.\n2️⃣ Deposição rápida sob sedimentos finos (como argila ou areia), isolando-o do oxigénio para evitar a decomposição total.\n3️⃣ Transformações químicas ao longo de milhões de anos! Os principais processos são a **moldagem** (marca do organismo), a **mineralização** (substituição por minerais), a **incarbonização** (enriquecimento em carbono), e a **mumificação ou conservação** (como no âmbar ou gelo). 🏺";
+        } else if (textLower.includes("âmbar") || textLower.includes("ambar") || textLower.includes("inseto")) {
+          return "O **âmbar** é resina gotejada de pinheiros antigos que endureceu ao longo de milhões de anos. Se um pequeno inseto lá ficasse preso, o âmbar preservava-o perfeitamente em 3D, com pele, pernas e asas intactas! É um processo magnífico de conservação total (mumificação). 💎";
+        } else if (textLower.includes("curiosidades") || textLower.includes("curiosidade") || textLower.includes("diz-me curiosidades")) {
+          return "Sabias que em **Portugal** temos algumas das maiores riquezas paleontológicas do mundo? Por exemplo:\n\n- O trilho de pegadas de dinossauros da Serra de Aire é o mais longo do mundo!\n- Em Canelas (Arouca), encontram-se trilobites gigantes com mais de 50 cm de comprimento!\n- O Geoparque de Arouca e a Lourinhã são geossítios classificados de valor internacional devido aos seus fósseis excecionais! 🇵🇹";
+        } else {
+          return "Olá, jovem paleontólogo! Fico contente com a tua curiosidade 🦕. Como PaleoBot, posso explicar-te tópicos da matéria do 7.º ano como:\n- *O que é um fóssil?*\n- *Diferença entre Somatofóssil e Icnofóssil*\n- *Processos de fossilização como Mineralização, Incarbonização, Moldagem e Âmbar*\n- *As três grandes eras geológicas (Paleozoico, Mesozoico, Cenozoico)*\n- *A importância dos fósseis de idade e de fácies.*\n\nO que queres explorar a seguir?";
+        }
+      }
+    </script>
   </body>
 </html>
-
