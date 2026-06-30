@@ -1,0 +1,6 @@
+{
+  "name": "Museu Virtual de Fósseis",
+  "description": "Uma viagem interativa e educativa pela história da vida na Terra, com galeria, apresentações, questionários, criador de fósseis e o PaleoBot.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

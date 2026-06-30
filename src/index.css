@@ -1,0 +1,72 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Cinzel", Georgia, serif;
+
+  /* Warm Organic / Cultural Palette */
+  --color-warm-bg: #F5F2ED;
+  --color-warm-text: #3D2B1F;
+  --color-warm-header: #EAE3D9;
+  --color-warm-border: #D4C4B0;
+  --color-warm-accent: #C5A059;
+  --color-warm-sage: #6B705C;
+  --color-warm-paper: #FDFBF7;
+
+  /* Warm Organic Dark / Earthy Cavern Palette */
+  --color-dark-bg: #1F1610;
+  --color-dark-text: #EAE3D9;
+  --color-dark-panel: #2C2016;
+  --color-dark-card: #38281D;
+  --color-dark-border: #4D3A2C;
+  --color-dark-sage: #A3AA90;
+}
+
+/* Custom fade-in animation for tab transitions and content loads */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Custom scrollbar configurations for a neat visual feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(217, 119, 6, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 119, 6, 0.5);
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
